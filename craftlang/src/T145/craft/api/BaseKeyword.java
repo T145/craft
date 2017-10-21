@@ -48,7 +48,7 @@ public abstract class BaseKeyword implements IKeyword {
 
 	@Override
 	public String toString() {
-		String out = "-" + word + "(" + name + ")" + "[" + id + "]";
+		String out = word + "(" + name + ")" + "[" + id + "]";
 
 		if (!properties.isEmpty()) {
 			out += "{" + properties + "}";
