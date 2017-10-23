@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import T145.craft.err.FileFormatException;
 import T145.craft.err.UnknownKeywordException;
+import T145.craft.keywords.KeywordAdd;
 import T145.craft.sys.CraftQueue;
 
 public class Main {
@@ -12,7 +13,7 @@ public class Main {
 	public static void main(String[] args) {
 		try {
 			CraftQueue workbench = new CraftQueue("D:\\Users\\taylo\\eclipse-workspace\\craft\\scripts\\add_test.craft");
-			workbench.register("add");
+			workbench.register(new KeywordAdd());
 			workbench.readKeywordsFromFile();
 			workbench.execute();
 		} catch (FileNotFoundException e) {

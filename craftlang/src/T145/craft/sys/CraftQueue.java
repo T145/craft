@@ -11,7 +11,6 @@ import java.util.Queue;
 
 import org.apache.commons.lang3.StringUtils;
 
-import T145.craft.api.BaseKeyword;
 import T145.craft.api.IKeyword;
 import T145.craft.err.FileFormatException;
 import T145.craft.err.UnknownKeywordException;
@@ -21,7 +20,7 @@ public class CraftQueue {
 	public static final String FILE_EXTENSION = ".craft";
 
 	private String filePath;
-	private List<String> keywordDB = new ArrayList<String>();
+	private List<IKeyword> keywordDB = new ArrayList<IKeyword>();
 	private Queue<IKeyword> keywords = new LinkedList<IKeyword>();
 	private int minId;
 
@@ -29,13 +28,13 @@ public class CraftQueue {
 		this.filePath = filePath;
 	}
 
-	public CraftQueue register(String word) {
-		keywordDB.add(word);
+	public CraftQueue register(IKeyword keyword) {
+		keywordDB.add(keyword);
 		return this;
 	}
 
-	public CraftQueue unregister(String word) {
-		keywordDB.remove(word);
+	public CraftQueue unregister(IKeyword keyword) {
+		keywordDB.remove(keyword);
 		return this;
 	}
 
@@ -43,25 +42,26 @@ public class CraftQueue {
 		return !filePath.isEmpty() && filePath.substring(filePath.length() - FILE_EXTENSION.length(), filePath.length()).equals(FILE_EXTENSION);
 	}
 
-	private IKeyword getSanitizedKeyword(String s) {
+	private IKeyword getSanitizedKeyword(String s) throws UnknownKeywordException {
 		if (!s.isEmpty()) {
 			String temp = StringUtils.EMPTY; // copy string which we edit
 			String props = StringUtils.substringBetween(s, "{", "}");
 
-			for (String word : keywordDB) {
-				if (s.startsWith(word)) {
-					IKeyword keyword = new BaseKeyword(word);
-					temp = s.substring(word.length(), s.length()).replaceAll("\\{.*?\\} ?", "");
-					keyword.setName(temp.replaceAll("\\P{L}+", ""));
+			for (IKeyword keyword : keywordDB) {
+				if (s.startsWith(keyword.getWord())) {
+					IKeyword match = keyword.copy();
+					temp = s.substring(match.getWord().length(), s.length()).replaceAll("\\{.*?\\} ?", "");
+					match.setName(temp.replaceAll("\\P{L}+", ""));
 					temp = temp.replaceAll("\\D+", ""); // we're not using it anymore
-					keyword.setId(temp.isEmpty() ? minId++ : Integer.parseInt(temp));
-					keyword.setProperties(props == null ? StringUtils.EMPTY : props);
-					return keyword;
+					match.setId(temp.isEmpty() ? minId++ : Integer.parseInt(temp));
+					match.setProperties(props == null ? StringUtils.EMPTY : props);
+					return match;
 				}
 			}
 		}
 
-		return null;
+		// case 7
+		throw new UnknownKeywordException();
 	}
 
 	/*
@@ -91,16 +91,13 @@ public class CraftQueue {
 					// cases 4-6
 					IKeyword keyword = getSanitizedKeyword(line);
 
-					// case 7
-					if (keyword == null) {
-						throw new UnknownKeywordException();
-					}
-
 					// case 8
 					if (keyword.isValid()) {
 						keywords.add(keyword);
-					} else { // TODO: Add support for multi-line data entry
-						throw new FileFormatException(); // TODO: Add intelligent error reports ( i.e. don't do this, do this)
+					} else {
+						// TODO: Add support for multi-line data entry
+						// TODO: Add intelligent error reports ( i.e. don't do this, do this)
+						throw new FileFormatException();
 					}
 				}
 			}
