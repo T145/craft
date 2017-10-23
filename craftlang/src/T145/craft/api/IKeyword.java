@@ -21,5 +21,5 @@ public interface IKeyword {
 
 	public boolean isValid();
 
-	public void execute(Object... objects);
+	public void execute();
 }

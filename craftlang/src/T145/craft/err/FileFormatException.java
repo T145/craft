@@ -1,5 +1,6 @@
 package T145.craft.err;
 
+@SuppressWarnings("serial")
 public class FileFormatException extends Exception {
 
 	public FileFormatException() {

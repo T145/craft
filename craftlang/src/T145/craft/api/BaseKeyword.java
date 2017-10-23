@@ -61,7 +61,4 @@ public abstract class BaseKeyword implements IKeyword {
 	public boolean isValid() {
 		return word != null && name != null && properties != null;
 	}
-
-	@Override
-	public abstract void execute(Object... objects);
 }

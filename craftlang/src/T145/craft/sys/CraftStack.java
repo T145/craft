@@ -5,9 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import java.util.Stack;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,36 +20,23 @@ public class CraftStack {
 
 	private String filePath;
 	private List<IKeyword> keywordDB;
-	private Queue<IKeyword> keywords;
+	private Stack<IKeyword> keywords;
+	private int minId;
 
 	public CraftStack(String filePath) throws FileNotFoundException, IOException, UnknownKeywordException, FileFormatException {
 		this.filePath = filePath;
 		this.keywordDB = new ArrayList<IKeyword>();
-		this.keywords = new LinkedList<IKeyword>();
-		//readKeywordsFromFile();
+		this.keywords = new Stack<IKeyword>();
 	}
 
-	public CraftStack registerKeyword(IKeyword keyword) {
+	public CraftStack register(IKeyword keyword) {
 		keywordDB.add(keyword);
 		return this;
 	}
 
-	public CraftStack unregisterKeyword(IKeyword keyword) {
+	public CraftStack unregister(IKeyword keyword) {
 		keywordDB.remove(keyword);
 		return this;
-	}
-
-	private CraftStack add(IKeyword keyword) {
-		keywords.add(keyword);
-		return this;
-	}
-
-	private IKeyword remove() {
-		return keywords.remove();
-	}
-
-	public boolean isEmpty() {
-		return keywords.isEmpty();
 	}
 
 	public boolean isValid() {
@@ -67,11 +53,10 @@ public class CraftStack {
 
 				if (s.startsWith(word)) {
 					temp = s.substring(word.length(), s.length()).replaceAll("\\{.*?\\} ?", "");
-					//System.out.println(temp);
 					keyword.setName(temp.replaceAll("\\P{L}+", ""));
 					temp = temp.replaceAll("\\D+", ""); // we're not using it anymore
-					keyword.setId(temp.isEmpty() ? keyword.getId() + 1 : Integer.parseInt(temp));
-					keyword.setProperties(props == null ? "" : props);
+					keyword.setId(temp.isEmpty() ? minId++ : Integer.parseInt(temp));
+					keyword.setProperties(props == null ? StringUtils.EMPTY : props);
 					return keyword;
 				}
 			}
@@ -115,7 +100,7 @@ public class CraftStack {
 
 					// case 8
 					if (keyword.isValid()) {
-						add(keyword);
+						keywords.push(keyword);
 						min += keyword.toString() + '\n';
 					} else { // TODO: Add support for multi-line data entry
 						throw new FileFormatException(); // TODO: Add intelligent error reports ( i.e. don't do this, do this)
@@ -127,9 +112,6 @@ public class CraftStack {
 		}
 	}
 
-	public void run() {
-		while (!isEmpty()) {
-			remove().execute();
-		}
+	public void execute() {
 	}
 }
