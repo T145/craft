@@ -6,6 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/taylo/eclipse-workspace/craftlang/libs/commons-lang3-3.4.jar"/>
+	<classpathentry kind="lib" path="D:/Users/taylo/eclipse-workspace/craft/libs/commons-lang3-3.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
