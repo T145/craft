@@ -20,6 +20,4 @@ public interface IKeyword {
 	public void setProperties(String props);
 
 	public boolean isValid();
-
-	public void execute();
 }

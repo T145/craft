@@ -5,37 +5,37 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
+import java.util.Queue;
 
 import org.apache.commons.lang3.StringUtils;
 
+import T145.craft.api.BaseKeyword;
 import T145.craft.api.IKeyword;
 import T145.craft.err.FileFormatException;
 import T145.craft.err.UnknownKeywordException;
 
-public class CraftStack {
+public class CraftQueue {
 
 	public static final String FILE_EXTENSION = ".craft";
 
 	private String filePath;
-	private List<IKeyword> keywordDB;
-	private Stack<IKeyword> keywords;
+	private List<String> keywordDB = new ArrayList<String>();
+	private Queue<IKeyword> keywords = new LinkedList<IKeyword>();
 	private int minId;
 
-	public CraftStack(String filePath) throws FileNotFoundException, IOException, UnknownKeywordException, FileFormatException {
+	public CraftQueue(String filePath) throws FileNotFoundException, IOException, UnknownKeywordException, FileFormatException {
 		this.filePath = filePath;
-		this.keywordDB = new ArrayList<IKeyword>();
-		this.keywords = new Stack<IKeyword>();
 	}
 
-	public CraftStack register(IKeyword keyword) {
-		keywordDB.add(keyword);
+	public CraftQueue register(String word) {
+		keywordDB.add(word);
 		return this;
 	}
 
-	public CraftStack unregister(IKeyword keyword) {
-		keywordDB.remove(keyword);
+	public CraftQueue unregister(String word) {
+		keywordDB.remove(word);
 		return this;
 	}
 
@@ -48,10 +48,9 @@ public class CraftStack {
 			String temp = StringUtils.EMPTY; // copy string which we edit
 			String props = StringUtils.substringBetween(s, "{", "}");
 
-			for (IKeyword keyword : keywordDB) {
-				String word = keyword.getWord();
-
+			for (String word : keywordDB) {
 				if (s.startsWith(word)) {
+					IKeyword keyword = new BaseKeyword(word);
 					temp = s.substring(word.length(), s.length()).replaceAll("\\{.*?\\} ?", "");
 					keyword.setName(temp.replaceAll("\\P{L}+", ""));
 					temp = temp.replaceAll("\\D+", ""); // we're not using it anymore
@@ -79,7 +78,6 @@ public class CraftStack {
 	public void readKeywordsFromFile() throws FileNotFoundException, IOException, UnknownKeywordException, FileFormatException {
 		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
 			String line = StringUtils.EMPTY;
-			String min = StringUtils.EMPTY;
 
 			while ((line = reader.readLine()) != null) {
 				line = line.replaceAll("\t", " ").replaceAll(" ", "");
@@ -100,18 +98,18 @@ public class CraftStack {
 
 					// case 8
 					if (keyword.isValid()) {
-						keywords.push(keyword);
-						min += keyword.toString() + '\n';
+						keywords.add(keyword);
 					} else { // TODO: Add support for multi-line data entry
 						throw new FileFormatException(); // TODO: Add intelligent error reports ( i.e. don't do this, do this)
 					}
 				}
 			}
-
-			System.out.println(min);
 		}
 	}
 
 	public void execute() {
+		while (!keywords.isEmpty()) {
+			System.out.println(keywords.remove());
+		}
 	}
 }

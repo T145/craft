@@ -5,17 +5,16 @@ import java.io.IOException;
 
 import T145.craft.err.FileFormatException;
 import T145.craft.err.UnknownKeywordException;
-import T145.craft.keywords.KeywordAdd;
-import T145.craft.sys.CraftStack;
+import T145.craft.sys.CraftQueue;
 
 public class Main {
 
 	public static void main(String[] args) {
 		try {
-			CraftStack systemStack = new CraftStack("D:\\Users\\taylo\\eclipse-workspace\\craft\\scripts\\add_test.craft");
-			systemStack.register(new KeywordAdd());
-			systemStack.readKeywordsFromFile();
-			systemStack.execute();
+			CraftQueue workbench = new CraftQueue("D:\\Users\\taylo\\eclipse-workspace\\craft\\scripts\\add_test.craft");
+			workbench.register("add");
+			workbench.readKeywordsFromFile();
+			workbench.execute();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

@@ -1,6 +1,6 @@
 package T145.craft.api;
 
-public abstract class BaseKeyword implements IKeyword {
+public class BaseKeyword implements IKeyword {
 
 	private String word;
 	private String name;
